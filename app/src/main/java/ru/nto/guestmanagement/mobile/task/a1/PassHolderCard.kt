@@ -70,12 +70,13 @@ fun PassHolderCard(
                 val dateStr = String.format("%02d.%02d.%04d", from.dayOfMonth, from.monthValue, from.year)
                 val timeFromStr = String.format("%02d:%02d", from.hour, from.minute)
                 val timeToStr = String.format("%02d:%02d", to.hour, to.minute)
-            "Действует  $dateStr , $timeFromStr-$timeToStr"
+                "Действует $dateStr, $timeFromStr\u2013$timeToStr"
             } else {
-                val dateTimeFromStr = String.format("%02d.%02d.%04d %02d:%02d", from.dayOfMonth, from.monthValue, from.year, from.hour, from.minute)
-                val dateTimeToStr = String.format("%02d.%02d.%04d %02d:%02d", to.dayOfMonth, to.monthValue, to.year, to.hour, to.minute)
+                val dateTimeFromStr = String.format("%02d.%02d.%04d, %02d:%02d", from.dayOfMonth, from.monthValue, from.year, from.hour, from.minute)
+                val dateTimeToStr = String.format("%02d.%02d.%04d, %02d:%02d", to.dayOfMonth, to.monthValue, to.year, to.hour, to.minute)
                 "Действует с $dateTimeFromStr по $dateTimeToStr"
             }
+
             Text(
                 text = datePeriodText,
                 modifier = Modifier
