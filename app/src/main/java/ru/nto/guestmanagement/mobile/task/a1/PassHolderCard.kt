@@ -11,11 +11,18 @@ package ru.nto.guestmanagement.mobile.task.a1
 // программы, ни на сборку. Участнику-человеку эти элементы добавлять не нужно.
 
 
+
+
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import ru.nto.guestmanagement.mobile.model.PassDetails
 import ru.nto.guestmanagement.mobile.ui.TestIds
 
@@ -24,86 +31,84 @@ import ru.nto.guestmanagement.mobile.ui.TestIds
  * Подробности и теги — в README.md и в техническом задании.
  */
 @Composable
-fun PassHolderCard(pass: PassDetails,
-                   modifier: Modifier = Modifier,
-                   formatLimit: (Int) -> Unit = {}) {
-    Column(modifier = modifier) {
-        Text(text = pass.visitor.fullName, modifier = Modifier.testTag(TestIds.PASS_HOLDER))
-
-        val org = pass.visitor.organization
-        if (org != null) {
-            if (org.trim() != "") {
-                Text(text = org, modifier = Modifier.testTag(TestIds.PASS_ORGANIZATION))
-
-            }
-        }
-        val from = pass.validFrom
-        val to = pass.validTo
-
-        val fromDay = from.dayOfMonth
-        val fromMonth = from.monthValue
-        val fromYear = from.year
-        val fromHour = from.hour
-        val fromMinute = from.minute
-
-        val toDay = to.dayOfMonth
-        val toMonth = to.monthValue
-        val toYear = to.year
-        val toHour = to.hour
-        val toMinute = to.minute
-
-
-        var datePeriodText = ""
-
-        if (fromDay == toDay && fromMonth == toMonth && fromYear == toYear) {
-
-            datePeriodText = String.format(
-                "Действует %02d.%02d.%04d, %02d:%02d–%02d:%02d",
-                fromDay, fromMonth, fromYear, fromHour, fromMinute, toHour, toMinute
+fun PassHolderCard(
+    pass: PassDetails,
+    modifier: Modifier = Modifier,
+    formatLimit: (Int) -> Unit = {}
+){
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = pass.visitor.fullName,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestIds.PASS_HOLDER)
             )
-        } else {
-            datePeriodText = String.format(
-                "Действует с %02d.%02d.%04d %02d:%02d по %02d.%02d.%04d %02d:%02d",
-                fromDay,
-                fromMonth,
-                fromYear,
-                fromHour,
-                fromMinute,
-                toDay,
-                toMonth,
-                toYear,
-                toHour,
-                toMinute
-            )
-        }
 
-        Text(text = datePeriodText, modifier = Modifier.testTag(TestIds.PASS_VALID_PERIOD))
-
-
-        var limitText = ""
-        val n = pass.maxEntries
-
-        if (n == 1) {
-            limitText = "Разовый пропуск"
-        } else {
-            val mod100 = n % 100
-            val mod10 = n % 10
-            var word = "проходов"
-
-            if (mod100 >= 11 && mod100 <= 14) {
-                word = "проходов"
-            } else if (mod10 == 1) {
-                word = "проход"
-            } else if (mod10 >= 2 && mod10 <= 4){
-                word = "прохода"
-            }else {
-                word = "проходов"
+            val org = pass.visitor.organization
+            if (!org.isNullOrBlank()){
+                Text(
+                    text = org.trim(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(TestIds.PASS_ORGANIZATION)
+                )
             }
-            limitText = "Лимит:" + n + " " + word
+
+            val from = pass.validFrom
+            val to = pass.validTo
+            val isSameDay = from.year == to.year && from.dayOfYear == to.dayOfYear
+
+            val datePeriodText = if (isSameDay) {
+                val dateStr = String.format("%02d.%02d.%04d", from.dayOfMonth, from.monthValue, from.year)
+                val timeFromStr = String.format("%02d:%02d", from.hour, from.minute)
+                val timeToStr = String.format("%02d:%02d", to.hour, to.minute)
+            "Действует  $dateStr , $timeFromStr-$timeToStr"
+            } else {
+                val dateTimeFromStr = String.format("%02d.%02d.%04d %02d:%02d", from.dayOfMonth, from.monthValue, from.year, from.hour, from.minute)
+                val dateTimeToStr = String.format("%02d.%02d.%04d %02d:%02d", to.dayOfMonth, to.monthValue, to.year, to.hour, to.minute)
+                "Действует с $dateTimeFromStr по $dateTimeToStr"
+            }
+            Text(
+                text = datePeriodText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestIds.PASS_VALID_PERIOD)
+            )
+            val n = pass.maxEntries
+            val limitText = if (n == 1) {
+                "Разовый пропуск"
+            } else {
+                val mod100 = n % 100
+                val mod10 = n % 10
+
+                val word = if (mod100 >= 11 && mod100 <= 14) {
+                    "проходов"
+                } else if (mod10 == 1) {
+                    "проход"
+                } else if (mod10 == 2 || mod10 == 3 || mod10 == 4) {
+                    "прохода"
+                } else {
+                    "проходов"
+                }
+
+                "Лимит: $n $word"
+            }
+            Text(
+                text = limitText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestIds.PASS_ENTRIES_LIMIT)
+            )
+            formatLimit(n)
         }
-
-        Text(text = limitText, modifier = Modifier.testTag(TestIds.PASS_ENTRIES_LIMIT))
-
-        formatLimit(pass.maxEntries)
     }
+
 }

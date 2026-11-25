@@ -32,7 +32,6 @@
         android:extractNativeLibs="false"
         android:label="Управление гостями"
         android:supportsRtl="true"
-        android:testOnly="true"
         android:theme="@style/Theme.GuestManagement" >
         <activity
             android:name="ru.nto.guestmanagement.mobile.MainActivity"

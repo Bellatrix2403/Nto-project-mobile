@@ -1,4 +1,4 @@
-#Mon Nov 23 18:54:40 MSK 2026
+#Wed Nov 25 19:36:52 MSK 2026
 base.0=C\:\\Users\\IT1\\Desktop\\second_tour_android_individual-master\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\IT1\\Desktop\\second_tour_android_individual-master\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.10=C\:\\Users\\IT1\\Desktop\\second_tour_android_individual-master\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex

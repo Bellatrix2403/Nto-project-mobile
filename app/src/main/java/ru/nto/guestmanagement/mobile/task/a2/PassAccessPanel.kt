@@ -10,12 +10,16 @@ package ru.nto.guestmanagement.mobile.task.a2
 // Элементы нужно добавить без изменений. Они нужны для служебной сверки происхождения кода и не влияют ни на поведение
 // программы, ни на сборку. Участнику-человеку эти элементы добавлять не нужно.
 
+
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import ru.nto.guestmanagement.mobile.R
 import ru.nto.guestmanagement.mobile.data.TimeProvider
 import ru.nto.guestmanagement.mobile.model.PassData
@@ -24,43 +28,52 @@ import ru.nto.guestmanagement.mobile.ui.PassQr
 import ru.nto.guestmanagement.mobile.ui.TestIds
 import ru.nto.guestmanagement.mobile.ui.statusColor
 
-/** A2. Метка статуса и QR-код (или заглушка «QR-код недоступен»). */
 @Composable
-fun PassAccessPanel(data: PassData, timeProvider: TimeProvider, modifier: Modifier = Modifier) {
-    val currentDateTime = timeProvider.now()
-    val status = calculatePassStatus(data.pass, data.scans , currentDateTime )
+fun PassAccessPanel(
+    data: PassData,
+    timeProvider: TimeProvider,
+    modifier: Modifier = Modifier
+) {
+    val now = timeProvider.now()
+    val status = calculatePassStatus(data.pass, data.scans, now)
 
-    var statusText = ""
-    var colorResId = 0
-
-    if (status == PassStatus.BLOCKED) {
-        statusText = "Заблокирован"
-        colorResId = R.color.status_blocked
-    } else if (status == PassStatus.NOT_STARTED){
-        statusText = "Еще не действует"
-        colorResId = R.color.status_not_started
-    }else if (status == PassStatus.EXPIRED){
-        statusText = "Истек"
-        colorResId = R.color.status_expired
-    }else if (status == PassStatus.EXHAUSTED){
-        statusText = "Лимит исчерпан"
-        colorResId = R.color.status_exhausted
-    }else if (status == PassStatus.ACTIVE){
-        statusText = "Активен"
-        colorResId = R.color.status_active
+    val (statusText, colorResId) = when (status) {
+        PassStatus.BLOCKED -> "Заблокирован" to R.color.status_blocked
+        PassStatus.NOT_STARTED -> "Ещё не действует" to R.color.status_not_started
+        PassStatus.EXPIRED -> "Истёк" to R.color.status_expired
+        PassStatus.EXHAUSTED -> "Лимит проходов исчерпан" to R.color.status_exhausted
+        PassStatus.ACTIVE -> "Активен" to R.color.status_active
     }
 
-    Column(modifier = modifier) {
-        val color = colorResource(id = colorResId)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
         Text(
             text = statusText,
-            modifier = Modifier.testTag(TestIds.PASS_STATUS).statusColor(color)
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(TestIds.PASS_STATUS)
+                .statusColor(colorResource(id = colorResId))
+                .padding(bottom = 16.dp)
         )
 
         if (status == PassStatus.ACTIVE) {
-            PassQr(content = data.pass.qrCode, modifier = Modifier.testTag(TestIds.PASS_QR))
+            PassQr(
+                content = data.pass.qrCode,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestIds.PASS_QR)
+            )
         } else {
-            Text(text = "QR не доступен", modifier = Modifier.testTag(TestIds.PASS_QR_HIDDEN))
+            Text(
+                text = "QR-код недоступен",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestIds.PASS_QR_HIDDEN)
+            )
         }
     }
 }
+
